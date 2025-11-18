@@ -19,6 +19,11 @@ $(document).ready(function() {
 
     function initForm() {
         // Obtenemos el Nonce de WP antes de permitir el envío del formulario
+        // Estado inicial de carga del Nonce
+        $('#submit-button').prop('disabled', true);
+        $('#submit-spinner').removeClass('d-none').addClass('d-inline-block');
+        $('#nonce-status').text('Cargando seguridad...');
+
         $.ajax({
             url: nonceEndpoint,
             method: 'GET',
@@ -183,9 +188,12 @@ $(document).ready(function() {
                 console.error('Error AJAX:', jqXHR.status, jqXHR.responseJSON);
             },
             complete: function() {
-                // Quitar estado de carga
-                $submitButton.prop('disabled', false);
-                $submitSpinner.removeClass('d-inline-block').addClass('d-none');
+                // Quitar estado de carga (esto lo maneja initForm en caso de éxito o error 403)
+                // Si hay otro error, se re-habilita aquí.
+                if (jqXHR.status !== 200 && jqXHR.status !== 403) {
+                    $submitButton.prop('disabled', false);
+                    $submitSpinner.removeClass('d-inline-block').addClass('d-none');
+                }
             }
         });
     }

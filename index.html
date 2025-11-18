@@ -217,11 +217,14 @@
                                     <!-- Botón de Envío -->
                                     <div class="text-center mt-4">
                                         <button type="submit" class="btn btn-primary btn-lg w-100" id="submit-button" disabled>
-                                            Enviar Mensaje a BD en WP
+                                            Enviar Mensaje
                                             <!-- Spinner de carga -->
                                             <span class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true" id="submit-spinner"></span>
                                         </button>
-                                        <p id="nonce-status" class="text-muted mt-2">Cargando seguridad...</p>
+                                        <p id="nonce-status" class="loading mt-2">
+                                            <i class="bi bi-check-circle-fill status-icon"></i>
+                                                Cargando seguridad...
+                                        </p>
                                     </div>
                                 </form>
                             </div>

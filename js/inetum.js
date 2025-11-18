@@ -22,7 +22,11 @@ $(document).ready(function() {
         // Estado inicial de carga del Nonce
         $('#submit-button').prop('disabled', true);
         $('#submit-spinner').removeClass('d-none').addClass('d-inline-block');
-        $('#nonce-status').text('Cargando seguridad...');
+        $('#nonce-status')
+            .text('Cargando seguridad...')
+            .prepend('<i class="bi bi-check-circle-fill status-icon"></i>')
+            .removeClass('loaded')
+            .addClass('loading');
 
         $.ajax({
             url: nonceEndpoint,
@@ -37,15 +41,36 @@ $(document).ready(function() {
                     $('#submit-button').prop('disabled', false);
                     $('#submit-spinner').removeClass('d-inline-block').addClass('d-none');
                     $('#nonce-status').text('Seguridad cargada.');
+                    setTimeout(() => {
+                        $('#nonce-status')
+                            .contents().filter(function() { return this.nodeType === 3; }).remove(); // borra texto previo
+                        $('#nonce-status').append(' Seguridad cargada.');
+                        $('#nonce-status')
+                        .removeClass('loading')
+                        .addClass('loaded');
+                    }, 1500);
                     $('#submit-button').text('Enviar Mensaje');
                 } else {
                     $('#nonce-status').text('Error de seguridad. Recarga la página.');
                     showModalMessage('Error de Inicialización', 'No se pudo obtener el código de seguridad (Nonce).');
                 }
             },
-            error: function() {
-                $('#nonce-status').text('Error de conexión con WordPress.');
-                showModalMessage('Error de Conexión', 'No se pudo contactar con la API de WordPress para cargar la seguridad.');
+            error: function(jqXHR, textStatus, errorThrown) {
+                let status = jqXHR.status;
+                let errorType = "de Servidor/PHP";
+
+                if (status === 0) {
+                    errorType = "de Red o CORS";
+                }
+                
+                $('#nonce-status').text(`Error ${status} - ${errorType}`);
+                showModalMessage('Error de Conexión', `No se pudo contactar con la API de WordPress para cargar la seguridad. Código: ${status}. Por favor, verifica la consola del navegador.`);
+                
+                console.error("Fallo al cargar Nonce:", {status, textStatus, errorThrown, response: jqXHR.responseText});
+                
+                // Re-habilitamos el botón en caso de fallo de conexión para no dejarlo atascado
+                $('#submit-button').prop('disabled', false);
+                $('#submit-spinner').removeClass('d-inline-block').addClass('d-none');
             }
         });
     }
@@ -153,7 +178,7 @@ $(document).ready(function() {
         
         // URL del endpoint REST API de WordPress (Plugin Inetum Form WP)
         // ACTUALIZADO: Apunta directamente al dominio de producción.
-        const postUrl_WP = 'https://inetum.automaworks.es/wp-json/inetum-form-wp/v1/submit';
+        //const postUrl_WP = 'https://inetum.automaworks.es/wp-json/inetum-form-wp/v1/submit';
         
         $.ajax({
             type: 'POST',

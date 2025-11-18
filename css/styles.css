@@ -85,3 +85,31 @@ body {
         border-top: none;
     }
 }
+
+#nonce-status {
+    transition: color 0.4s ease, transform 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Estado de la seguridad gris */
+#nonce-status.loading {
+    color: #6c757d; /* Bootstrap text-muted */
+}
+
+/* Estado verde + animación */
+#nonce-status.loaded {
+    color: #198754; /* Bootstrap success */
+    transform: scale(1.03);
+}
+
+/* Icono oculto hasta que esté listo */
+#nonce-status .status-icon {
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+#nonce-status.loaded .status-icon {
+    opacity: 1;
+}

@@ -94,6 +94,55 @@ $(document).ready(function() {
     }
 
     function sendAjaxRequest() {
-       
+        // Estado de carga
+        const $submitButton = $('#submit-button');
+        const $submitSpinner = $('#submit-spinner');
+        
+        $submitButton.prop('disabled', true);
+        $submitSpinner.removeClass('d-none');
+        
+        const formData = {
+            nombre_completo: $('#nombre_completo').val(),
+            email: $('#email').val(),
+            telefono: $('#telefono').val(),
+            mensaje: $('#mensaje').val()
+        };
+        
+        // URL del endpoint REST API de WordPress (Plugin Inetum Form WP)
+        // ACTUALIZADO: Apunta directamente al dominio de producción.
+        const postUrl_WP = 'https://inetum.automaworks.es/wp-json/inetum-form-wp/v1/submit';
+        
+        $.ajax({
+            type: 'POST',
+            url: postUrl_WP,
+            data: formData,
+            dataType: 'json',
+            success: function(response) {
+                showModalMessage('¡Enviado!', 'Gracias por tu mensaje. Nos pondremos en contacto contigo pronto.');
+                $('#contact-form')[0].reset(); // Limpiar formulario
+                $('.form-control').removeClass('is-valid');
+                $('#char-counter').text('160 caracteres restantes');
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                // Manejo de errores
+                let errorMsg = 'Hubo un problema al enviar tu mensaje. Inténtalo de nuevo más tarde.';
+                
+                // Intentar obtener mensaje específico del servidor si existe
+                if (jqXHR.responseJSON && jqXHR.responseJSON.message) {
+                    // Mostrar el mensaje de error que devuelve el plugin de WP
+                    errorMsg = 'Error: ' + jqXHR.responseJSON.message;
+                } else if (jqXHR.status === 404) {
+                    errorMsg = 'Error 404: No se encuentra el endpoint. Verifica que el plugin "Inetum Form WP" está activado.';
+                }
+                
+                showModalMessage('Error', errorMsg);
+                console.error('Error AJAX:', textStatus, errorThrown);
+            },
+            complete: function() {
+                // Quitar estado de carga
+                $submitButton.prop('disabled', false);
+                $submitSpinner.addClass('d-none');
+            }
+        });
     }
 });

@@ -1,6 +1,9 @@
 // -----------------------------------------------------
 // VARIABLES SASS (reemplazan a :root)
 // -----------------------------------------------------
+// =============================
+// Variables
+// =============================
 $inetum-blue: #007aff;
 $inetum-blue-hover: #0070e0;
 $inetum-black: #1d1d1f;
@@ -9,5 +12,99 @@ $inetum-light-gray: #f5f5f7;
 $inetum-white: #ffffff;
 
 $main-font: 'Oxygen', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-$bs-gradient: linear-gradient(180deg, rgba(141, 140, 140, 0.2), rgba(255, 255, 255, 0.629));
+
+$card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+$card-radius: 12px;
+
+$bs-gradient: linear-gradient(
+  180deg,
+  rgba(141, 140, 140, 0.2),
+  rgba(255, 255, 255, 0.629)
+);
+
+// =============================
+// Global
+// =============================
+body {
+  font-family: $main-font;
+  background-color: $inetum-white;
+  color: $inetum-black;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.bg-gradient {
+  background: $bs-gradient;
+  background-repeat: no-repeat;
+  height: 100px;
+}
+
+.header-border {
+  border-bottom: 2px solid #e5e5e5;
+}
+
+// Tipografía
+.display-5 {
+  font-weight: 700;
+  color: $inetum-black;
+}
+
+.mes-card {
+  color: $inetum-gray !important;
+}
+
+.icon-bootstrap-lila {
+  color: #620db7;
+}
+
+// =============================
+// Formulario
+// =============================
+.form-control:focus,
+.form-select:focus {
+  border-color: $inetum-blue;
+  box-shadow: 0 0 0 3px rgba($inetum-blue, 0.2);
+}
+
+.is-invalid {
+  border-color: #dc3545;
+}
+
+.invalid-feedback {
+  color: #dc3545;
+  font-size: 0.875rem;
+}
+
+.is-valid {
+  border-color: #198754;
+}
+
+// Contador de caracteres
+#char-counter {
+  font-size: 0.875rem;
+  color: $inetum-gray;
+
+  &.invalid {
+    color: #dc3545;
+    font-weight: 600;
+  }
+}
+
+// =============================
+// Modal
+// =============================
+#message-modal {
+  .modal-content {
+    border-radius: $card-radius;
+    border: none;
+  }
+
+  .modal-header {
+    border-bottom: none;
+  }
+
+  .modal-footer {
+    border-top: none;
+  }
+}
 

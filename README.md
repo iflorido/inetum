@@ -65,4 +65,4 @@ Devuelve respuestas JSON adecuadas para que el frontend (main.js) las procese.
 #### Prueba de maquetación en https://inetum.automaworks.es/inetumtecnica/ 
 
 ## CD Básico en Plesk
-![alt text](<integración en Plesk CD básico.png>)
+[alt text](integracion_enPleskCD_basico.png)

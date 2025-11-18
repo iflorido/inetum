@@ -37,3 +37,6 @@ body {
     color: var(--inetum-black);
 }
 
+.mes-card{
+    color: var(--inetum-gray)!important;
+}

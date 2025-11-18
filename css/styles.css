@@ -91,6 +91,7 @@ body {
     display: flex;
     align-items: center;
     gap: 6px;
+    justify-content: center; 
 }
 
 /* Estado de la seguridad gris */

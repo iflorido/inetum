@@ -25,8 +25,12 @@ body {
 
 .bg-gradient {
     background-repeat: no-repeat;
+    height: 100px;
 }
 
+.header-border {
+  border-bottom: 2px solid #e5e5e5; /* gris */
+}
 /* 2. Estilos base y tipografía */
 .display-5 {
     font-weight: 700;

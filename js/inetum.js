@@ -47,7 +47,9 @@ $(document).ready(function() {
                         $('#nonce-status').append(' Seguridad cargada.');
                         $('#nonce-status')
                         .removeClass('loading')
+                        .prepend('<i class="bi bi-check-circle-fill status-icon"></i>')
                         .addClass('loaded');
+                        
                     }, 1500);
                     $('#submit-button').text('Enviar Mensaje');
                 } else {

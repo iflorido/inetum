@@ -187,10 +187,9 @@ $(document).ready(function() {
                 showModalMessage('Error', errorMsg);
                 console.error('Error AJAX:', jqXHR.status, jqXHR.responseJSON);
             },
-            complete: function() {
-                // Quitar estado de carga (esto lo maneja initForm en caso de éxito o error 403)
-                // Si hay otro error, se re-habilita aquí.
-                if (jqXHR.status !== 200 && jqXHR.status !== 403) {
+                complete: function(jqXHR) { 
+                // Quitar estado de carga. Lo hacemos aquí de forma segura para todos los casos.
+                    if (jqXHR.status !== 200 && jqXHR.status !== 403) { 
                     $submitButton.prop('disabled', false);
                     $submitSpinner.removeClass('d-inline-block').addClass('d-none');
                 }

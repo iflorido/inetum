@@ -59,6 +59,10 @@ Recibe, sanea, valida y guarda los datos enviados por el formulario.
 
 Devuelve respuestas JSON adecuadas para que el frontend (main.js) las procese.
 
+
 #### Plugin instalado en https://inetum.automaworks.es/
 
 #### Prueba de maquetación en https://inetum.automaworks.es/inetumtecnica/ 
+
+## CD Básico en Plesk
+![alt text](<integración en Plesk CD básico.png>)

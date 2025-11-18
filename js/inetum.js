@@ -94,6 +94,6 @@ $(document).ready(function() {
     }
 
     function sendAjaxRequest() {
-     
+       
     }
 });

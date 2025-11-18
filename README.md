@@ -62,7 +62,8 @@ Devuelve respuestas JSON adecuadas para que el frontend (main.js) las procese.
 
 #### Plugin instalado en https://inetum.automaworks.es/
 
+## CD Básico en Plesk
+[Integración en Plesk CD Básico](integracion_enPleskCD_basico.png)
+
 #### Prueba de maquetación en https://inetum.automaworks.es/inetumtecnica/ 
 
-## CD Básico en Plesk
-[alt text](integracion_enPleskCD_basico.png)

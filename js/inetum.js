@@ -168,6 +168,8 @@ $(document).ready(function() {
         
         $submitButton.prop('disabled', true);
         $submitSpinner.removeClass('d-none').addClass('d-inline-block');
+        // Obtenemos el Nonce del campo oculto
+        const nonceValue = $('#wp-nonce').val(); // o inetum-nonce
         
         const formData = {
             nombre_completo: $('#nombre_completo').val(),
@@ -175,8 +177,7 @@ $(document).ready(function() {
             telefono: $('#telefono').val(),
             mensaje: $('#mensaje').val()
         };
-        // Obtenemos el Nonce del campo oculto
-        const nonceValue = $('#wp-nonce').val();
+        
         
         // URL del endpoint REST API de WordPress (Plugin Inetum Form WP)
         // ACTUALIZADO: Apunta directamente al dominio de producción.
@@ -185,38 +186,40 @@ $(document).ready(function() {
         $.ajax({
             type: 'POST',
             url: submitEndpoint,
-            data: formData,
+            contentType: 'application/json',
+            data: JSON.stringify(formData),
             dataType: 'json',
-            // --- ACREDITACIÓN: Enviamos el Nonce en el encabezado (mejor práctica) ---
-            beforeSend: function(xhr) {
-                xhr.setRequestHeader('X-WP-Nonce', nonceValue);
+
+            // Enviar nonce solo aquí
+            headers: {
+                'X-INETUM-SECURITY': nonceValue
             },
+
             success: function(response) {
                 showModalMessage('¡Enviado!', 'Gracias por tu mensaje. Nos pondremos en contacto contigo pronto.');
-                $('#contact-form')[0].reset(); // Limpiar formulario
+                
+                $('#contact-form')[0].reset();
                 $('.form-control').removeClass('is-valid');
                 $('#char-counter').text('160 caracteres restantes');
-                // Regenerar el nonce después de un envío exitoso
+
+                // Regenerar nonce
                 initForm();
             },
             error: function(jqXHR) {
-                // Manejo de errores
                 let errorMsg = 'Hubo un problema al enviar tu mensaje. Inténtalo de nuevo más tarde.';
                 
                 if (jqXHR.responseJSON && jqXHR.responseJSON.message) {
                     errorMsg = 'Error: ' + jqXHR.responseJSON.message;
                 } else if (jqXHR.status === 403) {
-                    errorMsg = 'Error de seguridad 403. El código de seguridad ha expirado. Por favor, recarga la página.';
-                    // Si el Nonce falla, forzamos la recarga para obtener uno nuevo
-                    initForm(); 
+                    errorMsg = 'Error de seguridad 403. El código de seguridad ha expirado. Recargando...';
+                    initForm();
                 }
-                
+
                 showModalMessage('Error', errorMsg);
                 console.error('Error AJAX:', jqXHR.status, jqXHR.responseJSON);
             },
-                complete: function(jqXHR) { 
-                // Quitar estado de carga. Lo hacemos aquí de forma segura para todos los casos.
-                    if (jqXHR.status !== 200 && jqXHR.status !== 403) { 
+            complete: function(jqXHR) {
+                if (jqXHR.status !== 200 && jqXHR.status !== 403) {
                     $submitButton.prop('disabled', false);
                     $submitSpinner.removeClass('d-inline-block').addClass('d-none');
                 }

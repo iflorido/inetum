@@ -43,3 +43,45 @@ body {
 .icon-bootstrap-lila{
     color: #620db7;
 }
+
+/* CSS del Formulario */
+.form-control:focus, .form-select:focus {
+    border-color: var(--inetum-blue);
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2);
+}
+
+
+.is-invalid {
+    border-color: #dc3545;
+}
+.invalid-feedback {
+    color: #dc3545;
+    font-size: 0.875rem;
+}
+.is-valid {
+    border-color: #198754;
+}
+
+#char-counter {
+    font-size: 0.875rem;
+    color: var(--inetum-gray);
+    
+    &.invalid {
+        color: #dc3545;
+        font-weight: 600;
+    }
+}
+
+/* Modal de Mensaje cuando enviamos el formulario */
+#message-modal {
+    .modal-content {
+        border-radius: var(--card-radius);
+        border: none;
+    }
+    .modal-header {
+        border-bottom: none;
+    }
+    .modal-footer {
+        border-top: none;
+    }
+}

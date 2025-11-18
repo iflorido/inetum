@@ -1,4 +1,9 @@
 $(document).ready(function() {
+
+    const maxLen = 160;
+    const wpApiRoot = 'https://inetum.automaworks.es/wp-json/';
+    const nonceEndpoint = wpApiRoot + 'inetum-form-wp/v1/nonce';
+    const submitEndpoint = wpApiRoot + 'inetum-form-wp/v1/submit';
     
     // --- Instanciador del Modal de Bootstrap ---
     var messageModal = new bootstrap.Modal(document.getElementById('message-modal'));
@@ -9,9 +14,40 @@ $(document).ready(function() {
         $('#modal-message').text(message);
         messageModal.show();
     }
+
+// añadimos una capa de seguridad extra para evitar envíos automáticos masivos.
+
+    function initForm() {
+        // Obtenemos el Nonce de WP antes de permitir el envío del formulario
+        $.ajax({
+            url: nonceEndpoint,
+            method: 'GET',
+            dataType: 'json',
+            success: function(response) {
+                if (response && response.nonce) {
+                    // Almacenamos el nonce en el campo oculto
+                    $('#wp-nonce').val(response.nonce);
+                    
+                    // Habilitamos el botón de envío
+                    $('#submit-button').prop('disabled', false);
+                    $('#submit-spinner').removeClass('d-inline-block').addClass('d-none');
+                    $('#nonce-status').text('Seguridad cargada.');
+                    $('#submit-button').text('Enviar Mensaje');
+                } else {
+                    $('#nonce-status').text('Error de seguridad. Recarga la página.');
+                    showModalMessage('Error de Inicialización', 'No se pudo obtener el código de seguridad (Nonce).');
+                }
+            },
+            error: function() {
+                $('#nonce-status').text('Error de conexión con WordPress.');
+                showModalMessage('Error de Conexión', 'No se pudo contactar con la API de WordPress para cargar la seguridad.');
+            }
+        });
+    }
+
     // Requisitos de la prueba técnica Inetum //
     // --- Contador de Caracteres  ---
-    const maxLen = 160;
+ 
     $('#mensaje').on('keyup', function() {
         const currentLen = $(this).val().length;
         const remaining = maxLen - currentLen;
@@ -99,7 +135,7 @@ $(document).ready(function() {
         const $submitSpinner = $('#submit-spinner');
         
         $submitButton.prop('disabled', true);
-        $submitSpinner.removeClass('d-none');
+        $submitSpinner.removeClass('d-none').addClass('d-inline-block');
         
         const formData = {
             nombre_completo: $('#nombre_completo').val(),
@@ -107,6 +143,8 @@ $(document).ready(function() {
             telefono: $('#telefono').val(),
             mensaje: $('#mensaje').val()
         };
+        // Obtenemos el Nonce del campo oculto
+        const nonceValue = $('#wp-nonce').val();
         
         // URL del endpoint REST API de WordPress (Plugin Inetum Form WP)
         // ACTUALIZADO: Apunta directamente al dominio de producción.
@@ -114,34 +152,40 @@ $(document).ready(function() {
         
         $.ajax({
             type: 'POST',
-            url: postUrl_WP,
+            url: submitEndpoint,
             data: formData,
             dataType: 'json',
+            // --- ACREDITACIÓN: Enviamos el Nonce en el encabezado (mejor práctica) ---
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader('X-WP-Nonce', nonceValue);
+            },
             success: function(response) {
                 showModalMessage('¡Enviado!', 'Gracias por tu mensaje. Nos pondremos en contacto contigo pronto.');
                 $('#contact-form')[0].reset(); // Limpiar formulario
                 $('.form-control').removeClass('is-valid');
                 $('#char-counter').text('160 caracteres restantes');
+                // Regenerar el nonce después de un envío exitoso
+                initForm();
             },
-            error: function(jqXHR, textStatus, errorThrown) {
+            error: function(jqXHR) {
                 // Manejo de errores
                 let errorMsg = 'Hubo un problema al enviar tu mensaje. Inténtalo de nuevo más tarde.';
                 
-                // Intentar obtener mensaje específico del servidor si existe
                 if (jqXHR.responseJSON && jqXHR.responseJSON.message) {
-                    // Mostrar el mensaje de error que devuelve el plugin de WP
                     errorMsg = 'Error: ' + jqXHR.responseJSON.message;
-                } else if (jqXHR.status === 404) {
-                    errorMsg = 'Error 404: No se encuentra el endpoint. Verifica que el plugin "Inetum Form WP" está activado.';
+                } else if (jqXHR.status === 403) {
+                    errorMsg = 'Error de seguridad 403. El código de seguridad ha expirado. Por favor, recarga la página.';
+                    // Si el Nonce falla, forzamos la recarga para obtener uno nuevo
+                    initForm(); 
                 }
                 
                 showModalMessage('Error', errorMsg);
-                console.error('Error AJAX:', textStatus, errorThrown);
+                console.error('Error AJAX:', jqXHR.status, jqXHR.responseJSON);
             },
             complete: function() {
                 // Quitar estado de carga
                 $submitButton.prop('disabled', false);
-                $submitSpinner.addClass('d-none');
+                $submitSpinner.removeClass('d-inline-block').addClass('d-none');
             }
         });
     }

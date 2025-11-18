@@ -171,6 +171,8 @@
                             <div class="card p-4 p-md-5">
                                  <!-- Añadimos novalidate para hacer la verificación por js según los requisitos de la prueba -->
                                 <form id="contact-form" novalidate>
+                                    <!-- Campo oculto para añadir seguridad -->
+                                    <input type="hidden" id="wp-nonce" name="_wpnonce" value="">
                                     <!-- Nombre Completo -->
                                     <div class="mb-3">
                                         <label for="nombre_completo" class="form-label fw-medium">Nombre completo</label>
@@ -219,6 +221,7 @@
                                             <!-- Spinner de carga -->
                                             <span class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true" id="submit-spinner"></span>
                                         </button>
+                                        <p id="nonce-status" class="text-muted mt-2">Cargando seguridad...</p>
                                     </div>
                                 </form>
                             </div>

@@ -41,7 +41,7 @@ Contador de Mensaje: Actualización dinámica de caracteres restantes.
 
 Feedback: Uso de Modal de Bootstrap en lugar de alert().
 
-Envío AJAX: Envía los datos mediante POST al endpoint REST de WordPress.
+Envío AJAX: Se implementa un flujo AJAX en WordPress con validación mediante nonces, sanitización de datos, procesamiento backend y respuesta JSON asíncrona que envía los datos mediante POST al endpoint REST de WordPress.
 
 ### 4. Plugin de WordPress: Inetum Form WP
 

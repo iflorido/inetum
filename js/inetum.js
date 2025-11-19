@@ -5,10 +5,10 @@ $(document).ready(function() {
     const nonceEndpoint = wpApiRoot + 'inetum-form-wp/v1/nonce';
     const submitEndpoint = wpApiRoot + 'inetum-form-wp/v1/submit';
     
-    // --- Instanciador del Modal de Bootstrap ---
+    // --- registramos el modal que está maquetado en el index.html ---
     var messageModal = new bootstrap.Modal(document.getElementById('message-modal'));
 
-    // --- Función para mostrar mensajes ---
+    // --- Función para mostrar el mensaje en con el modal ---
     function showModalMessage(title, message) {
         $('#modal-title').text(title);
         $('#modal-message').text(message);
@@ -19,7 +19,7 @@ $(document).ready(function() {
 
     function initForm() {
         // Obtenemos el Nonce de WP antes de permitir el envío del formulario
-        // Estado inicial de carga del Nonce
+        // Estado inicial de carga del Nonce, cargando seguridad y el botón desactivado
         $('#submit-button').prop('disabled', true);
         $('#submit-spinner').removeClass('d-none').addClass('d-inline-block');
         $('#nonce-status')
@@ -37,13 +37,13 @@ $(document).ready(function() {
                     // Almacenamos el nonce en el campo oculto
                     $('#wp-nonce').val(response.nonce);
                     
-                    // Habilitamos el botón de envío
+                    // Cuando hemos recibido el nonce Habilitamos el botón de envío y cambiamos el estado, añadimos un pequeño retardo para mejorar la UX y un icono
                     $('#submit-button').prop('disabled', false);
                     $('#submit-spinner').removeClass('d-inline-block').addClass('d-none');
                     $('#nonce-status').text('Seguridad cargada.');
                     setTimeout(() => {
                         $('#nonce-status')
-                            .contents().filter(function() { return this.nodeType === 3; }).remove(); // borra texto previo
+                            .contents().filter(function() { return this.nodeType === 3; }).remove(); // borramos texto previo
                         $('#nonce-status').append(' Seguridad cargada.');
                         $('#nonce-status')
                         .removeClass('loading')
@@ -70,7 +70,7 @@ $(document).ready(function() {
                 
                 console.error("Fallo al cargar Nonce:", {status, textStatus, errorThrown, response: jqXHR.responseText});
                 
-                // Re-habilitamos el botón en caso de fallo de conexión para no dejarlo atascado
+                // habilitamos el botón en caso de fallo de conexión para no dejarlo atascado
                 $('#submit-button').prop('disabled', false);
                 $('#submit-spinner').removeClass('d-inline-block').addClass('d-none');
             }
@@ -78,7 +78,7 @@ $(document).ready(function() {
     }
 
     // Requisitos de la prueba técnica Inetum //
-    // --- Contador de Caracteres  ---
+    // --- contador de caracteres  ---
  
     $('#mensaje').on('keyup', function() {
         const currentLen = $(this).val().length;
@@ -94,12 +94,12 @@ $(document).ready(function() {
         }
     });
 
-    // --- Validación y Envío AJAX  ---
+    // --- validación y envío AJAX  ---
     $('#contact-form').on('submit', function(e) {
-        e.preventDefault(); // Evitar envío tradicional
+        e.preventDefault(); // evitar envío normal
         
         if (validateForm()) {
-            // Formulario válido, proceder con AJAX
+            // formulario válido, envamos con AJAX
             sendAjaxRequest();
         }
     });
@@ -107,7 +107,7 @@ $(document).ready(function() {
     function validateForm() {
         let isValid = true;
         
-        // 1. Validar Nombre
+        // validar Nombre
         const $nombre = $('#nombre_completo');
         if ($nombre.val().trim() === '') {
             $nombre.addClass('is-invalid');
@@ -118,7 +118,7 @@ $(document).ready(function() {
             $('#error-nombre').hide();
         }
         
-        // 2. Validar Email
+        // validar Email
         const $email = $('#email');
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if ($email.val().trim() === '' || !emailRegex.test($email.val())) {
@@ -130,9 +130,9 @@ $(document).ready(function() {
             $('#error-email').hide();
         }
         
-        // 3. Validar Teléfono (Móvil de España)
+        // validar teléfono 
         const $telefono = $('#telefono');
-        const telefonoRegex = /^[67]\d{8}$/; // Empieza por 6 o 7, 9 dígitos en total
+        const telefonoRegex = /^[67]\d{8}$/; // empieza por 6 o 7, 9 dígitos en total
         if ($telefono.val().trim() === '' || !telefonoRegex.test($telefono.val().replace(/\s/g, ''))) {
             $telefono.addClass('is-invalid');
             $('#error-telefono').show();
@@ -142,7 +142,7 @@ $(document).ready(function() {
             $('#error-telefono').hide();
         }
         
-        // 4. Validar Mensaje
+        // validar mensaje
         const $mensaje = $('#mensaje');
         const msgLen = $mensaje.val().trim().length;
         if (msgLen === 0) {
@@ -162,13 +162,13 @@ $(document).ready(function() {
     }
 
     function sendAjaxRequest() {
-        // Estado de carga
+        // estado de carga
         const $submitButton = $('#submit-button');
         const $submitSpinner = $('#submit-spinner');
         
         $submitButton.prop('disabled', true);
         $submitSpinner.removeClass('d-none').addClass('d-inline-block');
-        // Obtenemos el Nonce del campo oculto
+        // obtenemos el nonce del campo oculto
         const nonceValue = $('#wp-nonce').val(); // o inetum-nonce
         
         const formData = {
@@ -178,9 +178,8 @@ $(document).ready(function() {
             mensaje: $('#mensaje').val()
         };
         
-        
         // URL del endpoint REST API de WordPress (Plugin Inetum Form WP)
-        // ACTUALIZADO: Apunta directamente al dominio de producción.
+        // Cambiamos el enviar directamente la URL aquí y lo hacemos con la varriable wpApiRoot + submitEndpoint
         //const postUrl_WP = 'https://inetum.automaworks.es/wp-json/inetum-form-wp/v1/submit';
         
         $.ajax({
@@ -190,7 +189,7 @@ $(document).ready(function() {
             data: JSON.stringify(formData),
             dataType: 'json',
 
-            // Enviar nonce solo aquí
+            // enviar nonce solo aquí
             headers: {
                 'X-INETUM-SECURITY': nonceValue
             },
@@ -202,7 +201,7 @@ $(document).ready(function() {
                 $('.form-control').removeClass('is-valid');
                 $('#char-counter').text('160 caracteres restantes');
 
-                // Regenerar nonce
+                // regenerar nonce e incializar formulario de nuevo
                 initForm();
             },
             error: function(jqXHR) {
@@ -226,5 +225,6 @@ $(document).ready(function() {
             }
         });
     }
+    // Llamamos a la función de inicialización al cargar la página
     initForm();
 });
